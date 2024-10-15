@@ -1,16 +1,13 @@
-"use client"
+"use client";
 import { useSettingsContext } from '@/context/settings/settings-context'
 import React from 'react'
 
-
 const MainPage = () => {
-    const {
+    const {settings : {theme},
+} = useSettingsContext();
 
-        settings : { theme },
-    } = useSettingsContext();
-  return (
-    <div>MainPage</div>
-  )
+  return  <div>MainPage</div>;
+  
 }
 
 export default MainPage
