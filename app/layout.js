@@ -1,13 +1,27 @@
 import './globals.css'
-import { Inter } from 'next/font/google'
+import "@/styles/typography.css";
+import { Public_Sans } from 'next/font/google'
 import StyledComponentsRegistry from '@/lib/AntRegistry'
 import { ClerkProvider } from '@clerk/nextjs'
 
-const inter = Inter({ subsets: ['latin'] })
+const publicSans = Public_Sans({
+
+  subsets: ["latin"],
+  weight: ["400", "500", "600"]
+})
 
 export const metadata = {
-  title: 'Your Website Title',
-  description: 'Your Website Description',
+  title: 'Connectify',
+  description: 'Create beautiful memories',
+}
+
+export const viewPort = {
+
+width: "device-width",
+initialState: 1.0,
+minimumScale: 1.0,
+maximumScale: 1.0,
+userScalable: "no",
 }
 
 export default function RootLayout({ children }) {
@@ -22,7 +36,7 @@ export default function RootLayout({ children }) {
         }
       }}>
     <html lang="en">
-      <body className={inter.className}>
+      <body className={publicSans.className}>
         <StyledComponentsRegistry>
 
         {children}
