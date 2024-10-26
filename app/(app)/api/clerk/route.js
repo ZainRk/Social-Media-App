@@ -1,4 +1,4 @@
-import { createUser, deleteUser, updateUser } from "@/actions/user";
+import { createUser } from "@/actions/user";
 import { headers } from "next/headers";
 import { Webhook } from "svix";
 
@@ -46,42 +46,66 @@ export async function POST(req) {
       status: 400,
     });
   }
-
-  // Get the ID and type
+  
+  //   // Get the ID and type
   const eventType = evt.type;
+  console.log(`Received ${eventType} event`);
 
-  const { id, first_name, last_name, email_addresses, image_url, username } = evt.data;
 
-  const email_address = email_addresses?.[0].email_address;
 
-  console.log("event received")
-  if (eventType === "user.created") {
-    try {
-      await createUser({ id, first_name, last_name, email_address, image_url, username });
-    } catch {
-      throw new Error("Failed to save new user in db");
+    console.log("event received");
+    if (eventType === "user.created") {
+      const { id, first_name, last_name, email_addresses, image_url, username } = evt.data;
+
+      const email_address = email_addresses?.[0].email_address;
+      try {
+        await createUser({
+          id,
+          first_name,
+          last_name,
+          email_address,
+          image_url,
+          username,
+        });
+      } catch (e) {
+        throw new Error("Failed to save new user in db");
+      }
     }
-  }
-
-  if (eventType === "user.updated") {
-    try {
-      await updateUser({ id, first_name, last_name, email_address, image_url, username });
-    } catch {
-      throw new Error("Failed to update user in db");
-    }
-  }
-
-  if(eventType === "user.deleted") {
-    try {
-      await deleteUser({ id });
-    } catch {
-      throw new Error("Failed to delete user in db");
-    }
-  }
-
-  return Response.json({ message: "received" });
+  return Response.json({message: "received"})
+  
 }
+
 
 export async function GET() {
   return Response.json({ message: "Hello World!" });
 }
+
+
+
+
+//   if (eventType === "user.updated") {
+//     try {
+//       await updateUser({
+//         id,
+//         first_name,
+//         last_name,
+//         email_address,
+//         image_url,
+//         username,
+//       });
+//     } catch {
+//       throw new Error("Failed to update user in db");
+//     }
+//   }
+
+//   if (eventType === "user.deleted") {
+//     try {
+//       await deleteUser({ id });
+//     } catch {
+//       throw new Error("Failed to delete user in db");
+//     }
+//   }
+
+//   return Response.json({ message: "received" });
+// }
+
