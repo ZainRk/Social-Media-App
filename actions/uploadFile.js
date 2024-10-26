@@ -19,7 +19,9 @@ export const uploadFile = async (file, folder) => {
     }
 }
 );
+
 return res
+
   } catch (e) {
     console.log(e);
     return {
