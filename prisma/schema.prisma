@@ -12,6 +12,7 @@ datasource db {
 }
 
 
+
 model User {
   id            String    @id
   email_address String?
@@ -21,7 +22,46 @@ model User {
   banner_id     String?
   banner_url    String?
   username      String?   @unique
-  // posts         Post[]
-  // Like          Like[]
-  // Comment       Comment[]
+  posts         Post[]
+  Like          Like[]
+  Comment       Comment[]
+}
+
+model Post {
+  id        Int       @id @default(autoincrement())
+  postText  String?
+  media     String?
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  cld_id    String?
+  createdAt DateTime  @default(now())
+  likes     Like[]
+  comments  Comment[]
+  trends    Trend[]
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  comment   String?
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+  createdAt DateTime @default(now())
+}
+
+model Trend {
+  id     Int    @id @default(autoincrement())
+  name   String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId Int
 }

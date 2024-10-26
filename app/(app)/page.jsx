@@ -1,11 +1,27 @@
+import React from "react";
+import HomeView from "@/sections/HomeView";
 
-import { useSettingsContext } from '@/context/settings/settings-context'
-import React from 'react'
-
-const MainPage = () => {
-
-  return  <>Main Page
-  </>;
+export const metadata = () => {
+  return {
+    title: `Connectify`,
+    description: `Connect, explore, and feel the freedom of limitless possibilities.`,
+  };
 };
 
-export default MainPage
+const HomePage = async () => {
+  // const queryClient = new QueryClient();
+  // const user = await currentUser()
+  // // get posts
+  // await queryClient.prefetchInfiniteQuery({
+  //   queryKey: ["posts", "all"],
+  //   queryFn: ({ pageParam = "" }) => getMyPostsFeed(pageParam),
+  //   getNextPageParam: (lastPage) => {
+  //     return lastPage?.metaData.lastCursor;
+  //   },
+  //   enabled: !!user,
+  // });
+
+  return <HomeView />;
+};
+
+export default HomePage;
