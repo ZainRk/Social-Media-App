@@ -1,45 +1,42 @@
 "use client";
-import React, { useState } from "react";
-import css from "@/styles/postGenerator.module.css";
+import React, { useRef, useState } from "react";
+import css from "@/styles/PostGenerator.module.css";
 import Box from "./Box/Box";
-import { Button, Flex, Image, Input, Spin, Typography } from "antd";
-import { useUser } from "@clerk/nextjs";
+import { Avatar, Button, Flex, Image, Input, Spin, Typography } from "antd";
 import { Icon } from "@iconify/react";
-import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { useUser } from "@clerk/nextjs";
 import { createPost } from "@/actions/post";
 
 const PostGenerator = () => {
-  const { user } = useUser();
-  const [postText, setPostText] = useState("");
-  const imgInputRef = React.useRef(null);
-  const videoInputRef = React.useRef(null);
-  const [fileType, setFileType] = useState(null);
+  const imgInputRef = useRef(null);
+  const vidInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [fileType, setFileType] = useState(null);
+  const [postText, setPostText] = useState(null);
   const queryClient = useQueryClient();
-
   const { mutate: execute, isPending } = useMutation({
     mutationFn: (data) => createPost(data),
     onSuccess: () => {
       handleSuccess();
       queryClient.invalidateQueries("posts");
     },
-    onError: () => showError("Something went wrong. Try Again!"),
+    onError: () => showError("Something wrong happened. Try again!"),
   });
 
   const handleSuccess = () => {
     setSelectedFile(null);
     setFileType(null);
     setPostText("");
-    toast.success("Post created successfully");
+    toast.success("Post created successfully!");
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
-
-    // Limit of 10MB
-    if (file && file.size > 10 * 1024 * 1024) {
-      alert("File size should be less than 10MB");
+    // put a limit of 5mb file size
+    if (file && file.size > 5 * 1024 * 1024) {
+      console.log("File size is too big");
       return;
     }
 
@@ -50,6 +47,7 @@ const PostGenerator = () => {
       setFileType(file.type.split("/")[0]);
 
       const reader = new FileReader();
+
       reader.readAsDataURL(file);
 
       reader.onload = () => {
@@ -63,56 +61,58 @@ const PostGenerator = () => {
     setFileType(null);
   };
 
-  const showError = (msg = "Something went wrong! Try again") => {
-    toast.error(msg);
+  const showError = (content = "Something went wrong! Try again.") => {
+    toast.error(content);
   };
 
-  const submitPost = () => {
+  function handleSubmitPost() {
     if ((postText === "" || !postText) && !selectedFile) {
-      showError("Post content or media is required!");
+      showError("Can't make an empty post");
       return;
     }
-
+    // don't forget to tell about the next.config.js file where we have set the limit of 5mb
     execute({ postText, media: selectedFile });
-  };
+  }
+
+  const { user } = useUser();
   return (
     <>
       <Spin
         spinning={isPending}
         tip={
           <Typography className="typoBody1" style={{ marginTop: "1rem" }}>
-            Uploading Post...
+            Uploading post...
           </Typography>
         }
       >
         <div className={css.postGenWrapper}>
           <Box className={css.container}>
-            <Flex vertical gap={"1rem"} align="flex-start">
-              {/* Generate Post  */}
+            <Flex gap={"1rem"} align={"flex-start"} vertical>
+              {/* avatar */}
 
               <Flex style={{ width: "100%" }} gap={"1rem"}>
-                <img
+                <Avatar
                   src={user?.imageUrl}
-                  alt="User Avatar"
                   style={{
-                    width: "4rem",
-                    height: "4rem", 
-                    borderRadius: "50%",
                     boxShadow: "var(--avatar-shadow)",
-                    objectFit: "cover",
+                    width: "2.6rem",
+                    height: "2.6rem",
                   }}
                 />
+
                 <Input.TextArea
-                  placeholder="Share what you are thinking..."
-                  style={{ height: 80, resize: "none", Flex: 1 }}
+                  // maxLength={100}
+                  placeholder={"Share what you are thinking..."}
+                  style={{ height: 80, resize: "none", flex: 1 }}
                   value={postText}
                   onChange={(e) => setPostText(e.target.value)}
                 />
               </Flex>
 
+              {/* file preview */}
               {fileType && (
                 <div className={css.previewContainer}>
-                  {/* Remove button  */}
+                  {/* remove button */}
                   <Button
                     type="default"
                     className={css.remove}
@@ -125,78 +125,73 @@ const PostGenerator = () => {
                       Remove
                     </Typography>
                   </Button>
+
+                  {/* media preview */}
                   {fileType === "image" && (
                     <Image
                       src={selectedFile}
                       className={css.preview}
-                      alt="preview of post"
-                      style={{ height: "100%", width: "100%" }}
+                      alt="preview"
+                      height={"350px"}
+                      width={"100%"}
                     />
                   )}
                   {fileType === "video" && (
                     <video
-                      src={selectedFile}
                       className={css.preview}
-                      alt="preview of post"
-                      style={{ height: "350px" }}
                       controls
+                      src={selectedFile}
                     />
                   )}
                 </div>
               )}
 
-              {/* Bottom Buttons  */}
-
+              {/* buttons Container */}
               <Flex
-                className={css.bottom}
                 align="center"
                 justify="space-between"
+                className={css.bottom}
               >
-                {/* Image upload button  */}
+                {/* upload buttons */}
+                {/* image upload button */}
                 <Button
                   type="text"
                   style={{ background: "borderColor" }}
                   onClick={() => imgInputRef.current.click()}
                 >
-                  <Flex align="center" gap={"0.5rem"}>
+                  <Flex align="center" gap={".5rem"}>
                     <Icon
-                      icon={"solar:camera-linear"}
-                      width={"1.2rem"}
+                      icon="solar:camera-linear"
+                      width="1.2rem"
                       color="var(--primary)"
                     />
-
                     <Typography className="typoSubtitle2">Image</Typography>
                   </Flex>
                 </Button>
 
-                {/* Video Upload Button  */}
-
+                {/* video upload button */}
                 <Button
                   type="text"
                   style={{ background: "borderColor" }}
-                  onClick={() => videoInputRef.current.click()}
+                  onClick={() => vidInputRef.current.click()}
                 >
-                  <Flex align="center" gap={"0.5rem"}>
+                  <Flex align="center" gap={".5rem"}>
                     <Icon
-                      icon={"gridicons:video"}
-                      width={"1.2rem"}
+                      icon="gridicons:video"
+                      width="1.2rem"
                       color="#5856D6"
                     />
-
                     <Typography className="typoSubtitle2">Video</Typography>
                   </Flex>
                 </Button>
 
-                {/* Post Button  */}
-
                 <Button
                   type="primary"
                   style={{ marginLeft: "auto" }}
-                  onClick={submitPost}
+                  onClick={handleSubmitPost}
                 >
-                  <Flex align="center" gap={"0.5rem"}>
-                    <Icon icon="iconamoon:send-fill" width={"1.2rem"} />
-
+                  <Flex align="center" gap={".5rem"}>
+                    <Icon icon="iconamoon:send-fill" width="1.2rem" />
                     <Typography
                       className="typoSubtitle2"
                       style={{ color: "white" }}
@@ -210,9 +205,7 @@ const PostGenerator = () => {
           </Box>
         </div>
       </Spin>
-
-      {/* Button to accept the images files  */}
-
+      {/* make an input to only accept img files and max number of files as 1 */}
       <input
         type="file"
         accept="image/*"
@@ -221,14 +214,13 @@ const PostGenerator = () => {
         ref={imgInputRef}
         onChange={(e) => handleFileChange(e)}
       />
-      {/* Button to accept the video files  */}
-
+      {/* make an input to only accept img files and max number of files as 1 */}
       <input
         type="file"
-        accept="video"
+        accept="video/*"
         multiple={false}
         style={{ display: "none" }}
-        ref={videoInputRef}
+        ref={vidInputRef}
         onChange={(e) => handleFileChange(e)}
       />
     </>
