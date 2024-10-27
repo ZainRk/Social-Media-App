@@ -1,6 +1,7 @@
 import React from 'react'
 import css from "@/styles/homeView.module.css"
 import PostGenerator from '@/components/PostGenerator'
+import Posts from '@/components/Posts'
 
 const HomeView = () => {
   return (
@@ -8,7 +9,7 @@ const HomeView = () => {
     <div className={css.postsArea}>
       {/* post generator on top */}
       <PostGenerator/>
-      <span>Posts</span>
+      <Posts/>
     </div>
 
       <div className={css.right}>
