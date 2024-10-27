@@ -34,9 +34,9 @@ const PostGenerator = () => {
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    // put a limit of 5mb file size
-    if (file && file.size > 5 * 1024 * 1024) {
-      console.log("File size is too big");
+    // put a limit of 20mb file size
+    if (file && file.size > 20 * 1024 * 1024) {
+      toast.error("File size exceeds 20MB");
       return;
     }
 

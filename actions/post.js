@@ -46,3 +46,14 @@ export const createPost = async (post) => {
         
     }
 }
+
+export const getMyFeedPosts = async () => {
+
+    try {
+
+    } catch (e) {
+        console.log(e);
+        throw new Error("Failed to fetch posts")
+        
+    }
+}
