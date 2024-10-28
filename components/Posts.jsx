@@ -18,7 +18,7 @@ const Posts = ({ id = "all"}) => {
         queryKey: ["posts", id],
         queryFn: ({pageParam = ""}) => getMyPostsFeed(pageParam),
         getNextPageParam: (lastPage) => {
-        return lastPage?.metadata?.lastCursor
+        return lastPage?.metaData?.lastCursor
         }
     })
 
@@ -58,13 +58,25 @@ const Posts = ({ id = "all"}) => {
                 </div>
               ) : (
                 <div key={post?.id}>
-                  <span>Post</span>
+                  <div style={{
+                    width: "100%",
+                    height: "30rem",
+                    background: "red"
+                  }}>
+                    Post
+                  </div>
                 </div>
               )
             )
           )}
+          {(isLoading || isFetchingNextPage || isFetching) && (
+            <Flex vertical align='center' gap="large">
+              <Spin/>
+              <Typography>Loading more posts...</Typography>
+            </Flex>
+          )}
         </Flex>
-        );
+      );
     }
     {
       (isLoading || isFetchingNextPage || isFetching) && (
