@@ -58,7 +58,13 @@ const Posts = ({ id = "all"}) => {
                 </div>
               ) : (
                 <div key={post?.id}>
-                  <span>Post</span>
+                 <div style={{
+                  height: '30rem',
+                  width: '100%',
+                  background: "red"
+                 }}>
+                  POST
+                 </div>
                 </div>
               )
             )
